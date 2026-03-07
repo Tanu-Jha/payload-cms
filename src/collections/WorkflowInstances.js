@@ -1,0 +1,90 @@
+const WorkflowInstances = {
+  slug: 'workflow-instances',
+  admin: {
+    useAsTitle: 'id',
+    defaultColumns: ['workflow', 'documentCollection', 'documentId', 'status', 'currentStepIndex', 'updatedAt'],
+    description: 'Active workflow executions bound to specific documents',
+  },
+  access: {
+    read: ({ req: { user } }) => Boolean(user),
+    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => user?.role === 'admin',
+  },
+  fields: [
+    {
+      name: 'workflow',
+      type: 'relationship',
+      relationTo: 'workflows',
+      required: true,
+    },
+    {
+      name: 'documentCollection',
+      type: 'text',
+      required: true,
+      admin: { description: 'Collection slug of the target document' },
+    },
+    {
+      name: 'documentId',
+      type: 'text',
+      required: true,
+      admin: { description: 'ID of the document this workflow is running on' },
+    },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'in_progress',
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'In Progress', value: 'in_progress' },
+        { label: 'Completed', value: 'completed' },
+        { label: 'Rejected', value: 'rejected' },
+        { label: 'Cancelled', value: 'cancelled' },
+      ],
+    },
+    {
+      name: 'currentStepIndex',
+      type: 'number',
+      required: true,
+      defaultValue: 0,
+    },
+    {
+      name: 'stepStatuses',
+      type: 'array',
+      fields: [
+        { name: 'stepId', type: 'text', required: true },
+        { name: 'stepName', type: 'text' },
+        { name: 'stepOrder', type: 'number' },
+        {
+          name: 'status',
+          type: 'select',
+          required: true,
+          defaultValue: 'pending',
+          options: [
+            { label: 'Pending', value: 'pending' },
+            { label: 'Active', value: 'active' },
+            { label: 'Approved', value: 'approved' },
+            { label: 'Rejected', value: 'rejected' },
+            { label: 'Reviewed', value: 'reviewed' },
+            { label: 'Commented', value: 'commented' },
+            { label: 'Skipped', value: 'skipped' },
+            { label: 'Escalated', value: 'escalated' },
+          ],
+        },
+        { name: 'assignedTo', type: 'text' },
+        { name: 'completedBy', type: 'relationship', relationTo: 'users' },
+        { name: 'completedAt', type: 'date' },
+        { name: 'comment', type: 'textarea' },
+        { name: 'slaDeadline', type: 'date' },
+        { name: 'isOverdue', type: 'checkbox', defaultValue: false },
+      ],
+    },
+    { name: 'startedAt', type: 'date', required: true },
+    { name: 'completedAt', type: 'date' },
+    { name: 'initiatedBy', type: 'relationship', relationTo: 'users' },
+  ],
+  timestamps: true,
+};
+
+module.exports = { WorkflowInstances };

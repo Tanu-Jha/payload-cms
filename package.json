@@ -1,0 +1,25 @@
+{
+  "name": "workflow-management-system",
+  "version": "1.0.0",
+  "description": "Dynamic Workflow Management System built with Payload CMS",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js nodemon src/server.js",
+    "build": "payload build",
+    "serve": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js NODE_ENV=production node src/server.js",
+    "seed": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js node src/seed/index.js",
+    "generate:types": "payload generate:types"
+  },
+  "dependencies": {
+    "@payloadcms/bundler-webpack": "^1.0.7",
+    "@payloadcms/db-mongodb": "^1.7.3",
+    "@payloadcms/richtext-slate": "^1.5.2",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "payload": "^2.25.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
