@@ -14,6 +14,10 @@ const { workflowPlugin } = require('./plugins/workflowPlugin');
 
 module.exports = buildConfig({
   serverURL: process.env.SERVER_URL || 'http://localhost:3000',
+  cors: [
+    process.env.SERVER_URL,
+    'http://localhost:3000',
+  ].filter(Boolean),
   admin: {
     user: Users.slug,
     bundler: webpackBundler(),
