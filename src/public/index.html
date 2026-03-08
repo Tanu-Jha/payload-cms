@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflow Management System — Credentials & Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:       #0c0e14;
+      --surface:  #14161e;
+      --surface2: #1c1f2b;
+      --border:   #2a2d3a;
+      --text:     #e4e6ef;
+      --muted:    #7c809a;
+      --accent:   #6c5ce7;
+      --accent2:  #a29bfe;
+      --green:    #00cec9;
+      --green2:   #55efc4;
+      --red:      #ff6b6b;
+      --amber:    #fdcb6e;
+      --orange:   #e17055;
+      --blue:     #74b9ff;
+      --radius:   12px;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Ambient glow */
+    .glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 { top: -200px; left: -100px; background: var(--accent); }
+    .glow-2 { bottom: -200px; right: -100px; background: var(--green); }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ─────────────────────────── */
+    header {
+      padding: 48px 0 32px;
+      text-align: center;
+    }
+    .logo-badge {
+      display: inline-flex;
+      align-items: center; gap: 10px;
+      padding: 8px 20px;
+      border-radius: 40px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--accent2);
+      margin-bottom: 24px;
+      animation: fadeDown 0.6s ease both;
+    }
+    .logo-badge .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      animation: fadeDown 0.6s 0.1s ease both;
+    }
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 17px;
+      margin-top: 14px;
+      max-width: 600px;
+      margin-left: auto; margin-right: auto;
+      animation: fadeDown 0.6s 0.2s ease both;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Quick Links ────────────────────── */
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      animation: fadeDown 0.6s 0.3s ease both;
+    }
+    .quick-links a {
+      display: inline-flex;
+      align-items: center; gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover { background: #5b4bd4; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent2); }
+
+    /* ── Section Titles ─────────────────── */
+    .section-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Credentials Section ────────────── */
+    .section { padding: 48px 0; }
+
+    .cred-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .cred-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .cred-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .cred-card:nth-child(1)::before { background: var(--accent); }
+    .cred-card:nth-child(2)::before { background: var(--green); }
+    .cred-card:nth-child(3)::before { background: var(--amber); }
+    .cred-card:nth-child(4)::before { background: var(--blue); }
+    .cred-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px -12px rgba(108, 92, 231, 0.2);
+    }
+    .cred-role {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cred-card:nth-child(1) .cred-role { color: var(--accent2); }
+    .cred-card:nth-child(2) .cred-role { color: var(--green); }
+    .cred-card:nth-child(3) .cred-role { color: var(--amber); }
+    .cred-card:nth-child(4) .cred-role { color: var(--blue); }
+    .cred-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .cred-field {
+      margin-bottom: 10px;
+    }
+    .cred-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .cred-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .cred-value:hover { border-color: var(--accent); }
+    .cred-value .copy-icon {
+      font-size: 12px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .cred-value:hover .copy-icon { color: var(--accent2); }
+    .cred-perms {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .cred-perm-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .perm-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .perm-tag {
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── API Reference ──────────────────── */
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .api-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: all 0.2s;
+    }
+    .api-card:hover { border-color: var(--accent); }
+    .api-method {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .method-post { background: #2d3a2d; color: var(--green2); }
+    .method-get  { background: #2a2d3a; color: var(--blue); }
+    .api-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .api-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Architecture ───────────────────── */
+    .arch-flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      overflow-x: auto;
+    }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .flow-box {
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 20px;
+    }
+    .flow-arrow-down {
+      display: flex;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 22px;
+      margin: 4px 0;
+    }
+    .fb-client   { background: #1a2332; color: var(--blue); border-color: #2a3a4d; }
+    .fb-server   { background: #1a2b1a; color: var(--green); border-color: #2a3d2a; }
+    .fb-plugin   { background: #2b2518; color: var(--amber); border-color: #3d3520; }
+    .fb-engine   { background: #2b1a1a; color: var(--red); border-color: #3d2a2a; }
+    .fb-db       { background: #1f1a2b; color: var(--accent2); border-color: #302a3d; }
+
+    /* ── Workflow Examples ───────────────── */
+    .wf-examples {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) { .wf-examples { grid-template-columns: 1fr; } }
+    .wf-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .wf-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .wf-card .wf-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .wf-step {
+      display: flex;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .wf-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .wf-step-info { flex: 1; }
+    .wf-step-name { font-weight: 600; font-size: 14px; }
+    .wf-step-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .wf-step-cond {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--amber);
+      margin-top: 4px;
+      padding: 3px 8px;
+      background: #2b2518;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* ── Tech Stack ─────────────────────── */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .tech-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    /* ── Footer ─────────────────────────── */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    footer p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ── Animations ─────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* ── Copy toast ─────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      padding: 10px 24px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 10000;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div id="toast" class="toast">Copied to clipboard</div>
+
+  <div class="container">
+    <!-- ── Header ────────────────────────────── -->
+    <header>
+      <div class="logo-badge">
+        <span class="dot"></span>
+        LIVE SYSTEM
+      </div>
+      <h1>
+        Dynamic <span class="highlight">Workflow</span><br />Management System
+      </h1>
+      <p class="subtitle">
+        A multi-stage approval workflow engine built on Payload CMS v2.
+        Create, assign, and track approval workflows for any collection dynamically.
+      </p>
+      <div class="quick-links">
+        <a href="/admin" class="btn-primary">Open Admin Panel &rarr;</a>
+        <a href="https://github.com/Tanu-Jha/payload-cms" class="btn-outline">View Source Code</a>
+        <a href="#credentials" class="btn-outline">View Credentials</a>
+      </div>
+    </header>
+
+    <!-- ── Credentials ───────────────────────── -->
+    <section id="credentials" class="section fade-in">
+      <span class="section-tag">Authentication</span>
+      <h2>Role-Based Credentials</h2>
+      <p class="section-desc">Each role has different permissions in the workflow system. Click any value to copy.</p>
+
+      <div class="cred-grid">
+        <!-- Admin -->
+        <div class="cred-card">
+          <div class="cred-role">Admin</div>
+          <div class="cred-name">Admin User</div>
+          <div class="cred-field">
+            <div class="cred-label">Email</div>
+            <div class="cred-value" onclick="copyText('admin@workflow.com')">
+              <span>admin@workflow.com</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-field">
+            <div class="cred-label">Password</div>
+            <div class="cred-value" onclick="copyText('admin123')">
+              <span>admin123</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-perms">
+            <div class="cred-perm-label">Permissions</div>
+            <div class="perm-list">
+              <span class="perm-tag">Create workflows</span>
+              <span class="perm-tag">Manage all users</span>
+              <span class="perm-tag">Final sign-off</span>
+              <span class="perm-tag">Delete documents</span>
+              <span class="perm-tag">View all logs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager -->
+        <div class="cred-card">
+          <div class="cred-role">Manager</div>
+          <div class="cred-name">Sarah Manager</div>
+          <div class="cred-field">
+            <div class="cred-label">Email</div>
+            <div class="cred-value" onclick="copyText('manager@workflow.com')">
+              <span>manager@workflow.com</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-field">
+            <div class="cred-label">Password</div>
+            <div class="cred-value" onclick="copyText('manager123')">
+              <span>manager123</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-perms">
+            <div class="cred-perm-label">Permissions</div>
+            <div class="perm-list">
+              <span class="perm-tag">Create workflows</span>
+              <span class="perm-tag">Approve steps</span>
+              <span class="perm-tag">Manager-level reviews</span>
+              <span class="perm-tag">View logs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviewer -->
+        <div class="cred-card">
+          <div class="cred-role">Reviewer</div>
+          <div class="cred-name">John Reviewer</div>
+          <div class="cred-field">
+            <div class="cred-label">Email</div>
+            <div class="cred-value" onclick="copyText('reviewer@workflow.com')">
+              <span>reviewer@workflow.com</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-field">
+            <div class="cred-label">Password</div>
+            <div class="cred-value" onclick="copyText('reviewer123')">
+              <span>reviewer123</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-perms">
+            <div class="cred-perm-label">Permissions</div>
+            <div class="perm-list">
+              <span class="perm-tag">Review documents</span>
+              <span class="perm-tag">Initial verification</span>
+              <span class="perm-tag">Add comments</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="cred-card">
+          <div class="cred-role">Editor</div>
+          <div class="cred-name">Emily Editor</div>
+          <div class="cred-field">
+            <div class="cred-label">Email</div>
+            <div class="cred-value" onclick="copyText('editor@workflow.com')">
+              <span>editor@workflow.com</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-field">
+            <div class="cred-label">Password</div>
+            <div class="cred-value" onclick="copyText('editor123')">
+              <span>editor123</span>
+              <span class="copy-icon">&#x2398;</span>
+            </div>
+          </div>
+          <div class="cred-perms">
+            <div class="cred-perm-label">Permissions</div>
+            <div class="perm-list">
+              <span class="perm-tag">Edit content</span>
+              <span class="perm-tag">Editor-level review</span>
+              <span class="perm-tag">Create blog posts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Architecture ──────────────────────── -->
+    <section class="section fade-in delay-1">
+      <span class="section-tag">System Design</span>
+      <h2>High-Level Architecture</h2>
+      <p class="section-desc">Request flows from client through the plugin system to the workflow engine and database.</p>
+
+      <div class="arch-flow">
+        <div class="flow-row">
+          <div class="flow-box fb-client">Browser / Admin UI / Postman</div>
+        </div>
+        <div class="flow-arrow-down">&darr; HTTP / REST</div>
+        <div class="flow-row">
+          <div class="flow-box fb-server">Express Server</div>
+          <span class="flow-arrow">&harr;</span>
+          <div class="flow-box fb-server">Payload CMS Core</div>
+          <span class="flow-arrow">&harr;</span>
+          <div class="flow-box fb-server">Custom REST APIs</div>
+        </div>
+        <div class="flow-arrow-down">&darr; afterChange hook</div>
+        <div class="flow-row">
+          <div class="flow-box fb-plugin">Workflow Plugin — finds matching workflows, triggers engine</div>
+        </div>
+        <div class="flow-arrow-down">&darr;</div>
+        <div class="flow-row">
+          <div class="flow-box fb-engine">Condition Evaluator</div>
+          <div class="flow-box fb-engine">Step Advancer</div>
+          <div class="flow-box fb-engine">Branching Logic</div>
+          <div class="flow-box fb-engine">Permission Check</div>
+        </div>
+        <div class="flow-row" style="margin-top:4px">
+          <div class="flow-box fb-engine">SLA Escalation</div>
+          <div class="flow-box fb-engine">Audit Logger</div>
+          <div class="flow-box fb-engine">Email Notifier</div>
+          <div class="flow-box fb-engine">Instance Manager</div>
+        </div>
+        <div class="flow-arrow-down">&darr; Mongoose ODM</div>
+        <div class="flow-row">
+          <div class="flow-box fb-db">users</div>
+          <div class="flow-box fb-db">blogs</div>
+          <div class="flow-box fb-db">contracts</div>
+          <div class="flow-box fb-db">workflows</div>
+          <div class="flow-box fb-db">instances</div>
+          <div class="flow-box fb-db" style="border-color:var(--red);color:var(--red)">logs (IMMUTABLE)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Workflow Examples ──────────────────── -->
+    <section class="section fade-in delay-2">
+      <span class="section-tag">Workflows</span>
+      <h2>Pre-configured Sample Workflows</h2>
+      <p class="section-desc">Two workflows are seeded to demonstrate the system. Both support conditional branching and SLA deadlines.</p>
+
+      <div class="wf-examples">
+        <div class="wf-card">
+          <h3>Blog Post Approval Flow</h3>
+          <p class="wf-sub">3 steps &middot; Triggers on blogs with status = "draft"</p>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--blue)">1</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Editor Review</div>
+              <div class="wf-step-meta">Role: editor &middot; SLA: 24h &middot; Type: review</div>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--green)">2</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Manager Approval</div>
+              <div class="wf-step-meta">Role: manager &middot; SLA: 48h &middot; Type: approval</div>
+              <div class="wf-step-cond">requires: previous = reviewed</div>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--accent)">3</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Admin Final Sign-off</div>
+              <div class="wf-step-meta">Role: admin &middot; SLA: 72h &middot; Type: sign-off</div>
+              <div class="wf-step-cond">requires: previous = approved</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wf-card">
+          <h3>Contract Approval Flow</h3>
+          <p class="wf-sub">4 steps &middot; Conditional branching on amount &gt; $100k</p>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--amber)">1</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Reviewer Initial Check</div>
+              <div class="wf-step-meta">Role: reviewer &middot; SLA: 12h &middot; Type: review</div>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--green)">2</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Manager Approval</div>
+              <div class="wf-step-meta">Role: manager &middot; SLA: 24h &middot; Type: approval</div>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--orange)">3</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Executive Review (High Value)</div>
+              <div class="wf-step-meta">Role: admin &middot; SLA: 48h &middot; Type: approval</div>
+              <div class="wf-step-cond">CONDITIONAL: amount &gt; 100000</div>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot" style="background:var(--accent)">4</div>
+            <div class="wf-step-info">
+              <div class="wf-step-name">Final Legal Sign-off</div>
+              <div class="wf-step-meta">Role: admin &middot; SLA: 72h &middot; Type: sign-off</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── API Reference ─────────────────────── -->
+    <section class="section fade-in delay-3">
+      <span class="section-tag">Endpoints</span>
+      <h2>Custom REST APIs</h2>
+      <p class="section-desc">Four custom endpoints for programmatic workflow control.</p>
+
+      <div class="api-grid">
+        <div class="api-card">
+          <span class="api-method method-post">POST</span>
+          <div class="api-path">/api/workflows/trigger</div>
+          <div class="api-desc">Manually trigger a workflow on any document. Requires workflowId, collectionSlug, and documentId.</div>
+        </div>
+        <div class="api-card">
+          <span class="api-method method-get">GET</span>
+          <div class="api-path">/api/workflows/status/:docId</div>
+          <div class="api-desc">Get complete workflow status, step progress, and audit trail for a document.</div>
+        </div>
+        <div class="api-card">
+          <span class="api-method method-post">POST</span>
+          <div class="api-path">/api/workflows/action</div>
+          <div class="api-desc">Approve, reject, review, or comment on the current active step. Requires authentication.</div>
+        </div>
+        <div class="api-card">
+          <span class="api-method method-post">POST</span>
+          <div class="api-path">/api/workflows/escalate-sla</div>
+          <div class="api-desc">Manually trigger SLA escalation check across all in-progress workflow instances.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tech Stack ────────────────────────── -->
+    <section class="section fade-in delay-4">
+      <span class="section-tag">Stack</span>
+      <h2>Technology</h2>
+      <div class="tech-row">
+        <div class="tech-pill">Payload CMS v2</div>
+        <div class="tech-pill">Express.js</div>
+        <div class="tech-pill">MongoDB</div>
+        <div class="tech-pill">JavaScript (ES6+)</div>
+        <div class="tech-pill">React (Admin UI)</div>
+        <div class="tech-pill">Mongoose ODM</div>
+        <div class="tech-pill">Custom Plugin System</div>
+        <div class="tech-pill">No 3rd-party Workflow Libraries</div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Dynamic Workflow Management System &middot; Built with Payload CMS v2 &middot; WeFrameTech Hiring Task</p>
+    </footer>
+  </div>
+
+  <script>
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = 'Copied: ' + text;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1800);
+      });
+    }
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
