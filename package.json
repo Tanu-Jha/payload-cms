@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js nodemon src/server.js",
-    "build": "payload build PAYLOAD_CONFIG_PATH=src/payload.config.js nodemon src/server.js",
+    "build": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js payload build",
     "serve": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js NODE_ENV=production node src/server.js",
     "seed": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.js node src/seed/index.js",
     "generate:types": "payload generate:types"
